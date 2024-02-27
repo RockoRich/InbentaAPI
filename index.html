@@ -7,42 +7,51 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
-    <h1>heyyy</h1>
 
 <script>
     // Configuración de autenticación
     const apiKey = 'BaC6s116splTqHtT2iMY0bAcy0qZwkbnStzqeKTE2dA='; 
+    const secret = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJwcm9qZWN0Ijoic2VhdF9sZXhpZV9ycmhoIiwic2FsdCI6IkJhQzZzMTJJdzVoYXk3TWxYbStvc3c9PSJ9.mnWTLKV_Cir-XnYgwvn_bTFCWCrmKKqG4TJgY5J3XWbzobo85xrX4AV_O68Z-MxMQd8S6Td3oFNvQB6pmMGVRQ';  // Reemplaza con tu secreto de aplicación
 
     // Endpoint de autenticación
     const authEndpoint = 'https://api.inbenta.io/v1/auth';
     const getDataEndpoint = 'https://api-gce4.inbenta.io/prod/ticketing/v1';  // Reemplaza con el endpoint específico que desees obtener
+    // https://api-gce4.inbenta.io/prod/chatbot/v1
+    // https://api-gce4.inbenta.io/prod/km/v1
+    // https://api-gce4.inbenta.io/prod/search/v1
+    // https://api-gce4.inbenta.io/prod/ticketing/v1
 
-    // Objeto de solicitud de autenticación con Domain Key
+    // Objeto de solicitud de autenticación
     const authRequest = {
-        domain_key: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJwcm9qZWN0Ijoic2VhdF9sZXhpZV9ycmhoIiwic2FsdCI6IkJhQzZzMTJJdzVoYXk3TWxYbStvc3c9PSJ9.mnWTLKV_Cir-XnYgwvn_bTFCWCrmKKqG4TJgY5J3XWbzobo85xrX4AV_O68Z-MxMQd8S6Td3oFNvQB6pmMGVRQ'  // Reemplaza con tu Domain Key
+        secret: secret 
     };
 
-    // Realizar la solicitud de autenticación con Domain Key
+    // Realizar la solicitud de autenticación
     $.ajax({
         url: authEndpoint,
         method: 'POST',
         contentType: 'application/json',
+        headers: {
+            'x-inbenta-key': apiKey  
+        },
         data: JSON.stringify(authRequest),
         success: function (authResponse) {
             const accessToken = authResponse.accessToken;
             console.log('Token de acceso:', accessToken);
 
-            // Guarda el token de acceso y utilízalo en las solicitudes subsiguientes
-            // ...
-
-            // Ejemplo de solicitud utilizando el token de acceso
+            // Ahora puedes usar el token de acceso para hacer solicitudes GET
             $.ajax({
                 url: getDataEndpoint,
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
-                    'x-inbenta-key': apiKey
+                    'x-inbenta-key': apiKey,  
+                    'Access-Control-Allow-Origin': 'http://localhost:5500'  // Ajusta esto según la configuración de tu servidor
                 },
+
+                xhrFields: {
+        withCredentials: false  // Configura conCredentials en false para una conexión anónima
+    },
                 success: function (dataResponse) {
                     console.log('Datos obtenidos:', dataResponse);
                 },
